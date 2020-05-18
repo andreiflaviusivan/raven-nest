@@ -1,0 +1,29 @@
+version: '3.1'
+services:
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - 27017:27017
+
+  mongo-admin:
+    build:
+      context: ./mongo-admin
+    restart: always
+    ports:
+      - 7000:1234
+    environment:
+      DB_USERNAME: root
+      DB_PASSWORD: example
+      
+  raven:
+    image: ravendb/ravendb:4.2.102-ubuntu.18.04-x64
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - 8080:8080
