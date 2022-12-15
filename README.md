@@ -1,6 +1,8 @@
 # Raven Nest
 A small sample of [NestJS](https://docs.nestjs.com/) which saves data in [RavenDB](https://ravendb.net/) running in [Docker](https://www.docker.com/)
 
+This project is a base for the tutorials on my [blog](https://afivan.com/category/development/ravennest/).
+
 ## Description
 The application runs two simple endpoints: one to retrieve data and the other to create entities. There is no specific format it expects, basically when you create an entity all the body you send as JSON will be taken and saved in the database.
 
