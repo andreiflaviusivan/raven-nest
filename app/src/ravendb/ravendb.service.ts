@@ -8,8 +8,8 @@ export class RavendbService {
 
   constructor(configService: ConfigService) {
     this.store = new DocumentStore(
-      configService.get<string>('RAVEN_SERVER'),
-      configService.get<string>('RAVEN_DATABASE')
+      configService.get<string>('db.raven.url'),
+      configService.get<string>('db.raven.database')
     );
 
     this.store.initialize();

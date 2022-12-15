@@ -3,14 +3,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { RavendbService } from './ravendb/ravendb.service';
+import {AppConfigModule} from "./app-config";
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      envFilePath: [
-        'config.global.env',
-      ],
-    })
+    AppConfigModule,
   ],
   controllers: [AppController],
   providers: [AppService, RavendbService],
