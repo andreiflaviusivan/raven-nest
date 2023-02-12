@@ -37,4 +37,9 @@ export class MovieController {
     const created = await this.movieRepo.storeDocument(body);
     return created;
   }
+
+  @Get('by/descriptions')
+  async getMoviesWithDescriptions() {
+    return await this.movieRepo.retrieveMoviesWithDescriptions();
+  }
 }

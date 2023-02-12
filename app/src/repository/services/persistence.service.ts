@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as fs from 'fs';
 import { ConfigService } from '@nestjs/config';
 import DocumentStore, { IAuthOptions } from 'ravendb';
-import {entityDescriptor, MovieEntity} from '../entities';
+import { entityDescriptor, MovieEntity } from '../entities';
 import { MovieRepo } from '../repos';
+import { MovieDescriptionIndex } from '../indexes';
 
 @Injectable()
 export class PersistenceService {
@@ -11,6 +12,11 @@ export class PersistenceService {
   private readonly descriptorsByCollection = {};
   private readonly descriptorsByName = {};
   private readonly documentInterfaces = {};
+  private readonly logger = new Logger(PersistenceService.name);
+
+  private async executeIndexes() {
+    await this.documentStore.executeIndex(new MovieDescriptionIndex());
+  }
 
   constructor(private readonly config: ConfigService) {
     if (this.config.get('db.raven.secure')) {
@@ -45,6 +51,10 @@ export class PersistenceService {
       }
     });
     this.documentStore.initialize();
+
+    this.executeIndexes().then(() =>
+      this.logger.log('RavenDB index execution complete'),
+    );
   }
 
   public getMovieRepo(): MovieRepo {
