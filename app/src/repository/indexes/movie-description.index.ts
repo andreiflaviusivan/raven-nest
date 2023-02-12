@@ -7,6 +7,7 @@ export class MovieDescriptionMap {
   public tags: string[];
 
   public description: string;
+  public movieId: string;
 }
 
 export class MovieDescriptionIndex extends AbstractJavaScriptIndexCreationTask<
@@ -30,6 +31,14 @@ export class MovieDescriptionIndex extends AbstractJavaScriptIndexCreationTask<
         tags: doc.tags,
         description,
       };
+    });
+
+    this.reduce((res) => {
+      return res
+        .groupBy((x) => x.movieId)
+        .aggregate((g) => {
+          return g.values[0];
+        });
     });
 
     this.index('name', 'Exact');

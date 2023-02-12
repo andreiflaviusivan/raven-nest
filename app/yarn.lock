@@ -5310,7 +5310,7 @@ range-parser@~1.2.1:
   resolved "https://registry.yarnpkg.com/range-parser/-/range-parser-1.2.1.tgz#3cf37023d199e1c24d1a55b84800c2f3e6468031"
   integrity sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==
 
-ravendb@^5.0.3:
+ravendb@5.2.7:
   version "5.2.7"
   resolved "https://registry.yarnpkg.com/ravendb/-/ravendb-5.2.7.tgz#824de8aa9f02fb2924f702d0c30e3a73c1a446d6"
   integrity sha512-+UkiwcFFecuYo0AHpErW1u3KnORqB1zZrE7aH+Zor7IYjJUI9mWylemXhndR3XROpbLyazRt3L6DhqPsnKosEw==

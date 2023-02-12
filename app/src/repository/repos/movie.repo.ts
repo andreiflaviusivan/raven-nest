@@ -7,20 +7,18 @@ export class MovieRepo extends BaseRepo<MovieEntity> {
     MovieDescriptionMap[]
   > {
     const session = this.documentStore.openSession();
-    const query = session
-      .query({
-        indexName: MovieDescriptionIndex.name,
-        documentType: MovieDescriptionMap,
-      })
-        .selectFields(['description', 'name', 'year'], MovieDescriptionMap, 'FromIndex')
-      // .getIndexQuery();
 
-    // const query = session.advanced
-    //   // .rawQuery<MovieDescriptionMap>(indexQuery.query)
-    //     .rawQuery<MovieDescriptionMap>('from index \'MovieDescriptionIndex\'')
-    //     // .noCaching()
-    //
-    //   .projection('FromIndex');
+    // FIXME This approach should work as well
+    // const query = session
+    //   .query({
+    //     indexName: MovieDescriptionIndex.name,
+    //     documentType: MovieDescriptionMap,
+    //   })
+    //   .selectFields(['description', 'name', 'year'], MovieDescriptionMap, 'FromIndex')
+
+    const query = session.advanced
+      .rawQuery<MovieDescriptionMap>(`from index '${MovieDescriptionIndex.name}'`)
+      .projection('FromIndex');
 
     const results = await query.all();
 
