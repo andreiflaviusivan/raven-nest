@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import DocumentStore, { IAuthOptions } from 'ravendb';
 import { entityDescriptor, MovieEntity } from '../entities';
 import { MovieRepo } from '../repos';
-import { MovieDescriptionIndex } from '../indexes';
+import {MovieCountByYearIndex, MovieDescriptionIndex} from '../indexes';
 
 @Injectable()
 export class PersistenceService {
@@ -16,6 +16,7 @@ export class PersistenceService {
 
   private async executeIndexes() {
     await this.documentStore.executeIndex(new MovieDescriptionIndex());
+    await this.documentStore.executeIndex(new MovieCountByYearIndex());
   }
 
   constructor(private readonly config: ConfigService) {

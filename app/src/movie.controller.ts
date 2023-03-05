@@ -42,4 +42,9 @@ export class MovieController {
   async getMoviesWithDescriptions() {
     return await this.movieRepo.retrieveMoviesWithDescriptions();
   }
+
+  @Get('by/yearCount')
+  async getMoviesCountByYear() {
+    return await this.movieRepo.retrieveMoviesCountByYear();
+  }
 }

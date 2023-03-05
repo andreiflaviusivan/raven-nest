@@ -1,6 +1,11 @@
 import { BaseRepo } from './base.repo';
 import { MovieEntity } from '../entities';
-import { MovieDescriptionIndex, MovieDescriptionMap } from '../indexes';
+import {
+  MovieCountByYearIndex,
+  MovieCountByYearMap,
+  MovieDescriptionIndex,
+  MovieDescriptionMap,
+} from '../indexes';
 
 export class MovieRepo extends BaseRepo<MovieEntity> {
   public async retrieveMoviesWithDescriptions(): Promise<
@@ -17,7 +22,9 @@ export class MovieRepo extends BaseRepo<MovieEntity> {
     //   .selectFields(['description', 'name', 'year'], MovieDescriptionMap, 'FromIndex')
 
     const query = session.advanced
-      .rawQuery<MovieDescriptionMap>(`from index '${MovieDescriptionIndex.name}'`)
+      .rawQuery<MovieDescriptionMap>(
+        `from index '${MovieDescriptionIndex.name}'`,
+      )
       .projection('FromIndex');
 
     const results = await query.all();
@@ -25,5 +32,22 @@ export class MovieRepo extends BaseRepo<MovieEntity> {
     session.dispose();
 
     return results;
+  }
+
+  public async retrieveMoviesCountByYear(): Promise<MovieCountByYearMap[]> {
+    const session = this.documentStore.openSession();
+
+    const query = session.advanced
+      .rawQuery<MovieCountByYearMap>(
+        `from index '${MovieCountByYearIndex.name}'`,
+      )
+      .projection('FromIndex');
+
+    const results = await query.all();
+
+    session.dispose();
+
+    // To remove @metadata which is unnecessary
+    return results.map(this.metadataRemove);
   }
 }

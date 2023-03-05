@@ -7,7 +7,7 @@ export class BaseRepo<TEntity extends BaseEntity> {
       return null;
     }
 
-    const conv = obj as TEntity;
+    const conv = obj;
 
     delete conv['__PROJECTED_NESTED_OBJECT_TYPES__'];
     delete conv['@metadata'];
