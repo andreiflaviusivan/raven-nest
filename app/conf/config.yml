@@ -1,0 +1,10 @@
+environment: 'development'
+names:
+  - Will
+  - Bob
+  - Chris
+
+db:
+  raven:
+    database: 'raven-nest'
+    url: 'http://localhost:8080/'
