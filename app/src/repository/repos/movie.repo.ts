@@ -4,7 +4,7 @@ import {
   MovieCountByYearIndex,
   MovieCountByYearMap,
   MovieDescriptionIndex,
-  MovieDescriptionMap, MovieGroupByYearIndex, MovieGroupByYearMap,
+  MovieDescriptionMap, MovieGroupByTagIndex, MovieGroupByTagMap, MovieGroupByYearIndex, MovieGroupByYearMap,
 } from '../indexes';
 
 export class MovieRepo extends BaseRepo<MovieEntity> {
@@ -59,6 +59,25 @@ export class MovieRepo extends BaseRepo<MovieEntity> {
         `from index '${MovieGroupByYearIndex.name}'`,
       )
       .projection('FromIndex');
+
+    const results = await query.all();
+
+    results.forEach(r => r.movies.forEach(this.metadataRemove));
+
+    session.dispose();
+
+    // To remove @metadata which is unnecessary
+    return results.map(this.metadataRemove);
+  }
+
+  public async retrieveMoviesGroupByTag(): Promise<MovieGroupByTagMap[]> {
+    const session = this.documentStore.openSession();
+
+    const query = session.advanced
+        .rawQuery<MovieGroupByTagMap>(
+            `from index '${MovieGroupByTagIndex.name}'`,
+        )
+        .projection('FromIndex');
 
     const results = await query.all();
 

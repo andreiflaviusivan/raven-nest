@@ -52,4 +52,9 @@ export class MovieController {
   async getMoviesGroupByYear() {
     return await this.movieRepo.retrieveMoviesGroupByYear();
   }
+
+  @Get('by/tagMovies')
+  async getMoviesGroupByTag() {
+    return await this.movieRepo.retrieveMoviesGroupByTag();
+  }
 }
