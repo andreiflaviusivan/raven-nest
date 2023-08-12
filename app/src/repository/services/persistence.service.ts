@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import DocumentStore, { IAuthOptions } from 'ravendb';
 import { entityDescriptor, MovieEntity } from '../entities';
 import { MovieRepo } from '../repos';
-import {MovieCountByYearIndex, MovieDescriptionIndex, MovieGroupByTagIndex, MovieGroupByYearIndex} from '../indexes';
+import {MovieCountByYearIndex, MovieDescriptionIndex, MovieGroupByTagIndex, MovieGroupByYearIndex, MovieSearchIndex} from '../indexes';
 
 @Injectable()
 export class PersistenceService {
@@ -19,6 +19,7 @@ export class PersistenceService {
     await this.documentStore.executeIndex(new MovieCountByYearIndex());
     await this.documentStore.executeIndex(new MovieGroupByYearIndex());
     await this.documentStore.executeIndex(new MovieGroupByTagIndex());
+    await this.documentStore.executeIndex(new MovieSearchIndex());
   }
 
   constructor(private readonly config: ConfigService) {
