@@ -1,6 +1,19 @@
 import { BaseEntity } from '../entities';
 import DocumentStore, { ObjectTypeDescriptor } from 'ravendb';
 
+export class PaginationContext {
+  public page: number;
+  public pageSize: number;
+}
+
+export class PaginatedResults<TPaginated extends BaseEntity> {
+  public page: number;
+  public pageSize: number;
+  public pagesTotal: number;
+  public docsTotal: number;
+  public results: TPaginated[];
+}
+
 export class BaseRepo<TEntity extends BaseEntity> {
   protected metadataRemove(obj) {
     if (!obj) {
@@ -13,6 +26,17 @@ export class BaseRepo<TEntity extends BaseEntity> {
     delete conv['@metadata'];
 
     return conv;
+  }
+
+  protected get defaultPaginationContext(): PaginationContext {
+    return {
+      page: 1,
+      pageSize: 50,
+    };
+  }
+
+  protected get maxPageSize(): number {
+    return 200;
   }
 
   constructor(
@@ -53,6 +77,58 @@ export class BaseRepo<TEntity extends BaseEntity> {
     session.dispose();
 
     return results.map(this.metadataRemove);
+  }
+
+  public async retrieveDocumentsPaginated(pagination: PaginationContext = null): Promise<PaginatedResults<TEntity>> {
+    pagination = pagination || this.defaultPaginationContext;
+
+    if (!pagination.page) {
+      pagination.page = this.defaultPaginationContext.page;
+    }
+
+    if (!pagination.pageSize) {
+      pagination.pageSize = this.defaultPaginationContext.pageSize;
+    }
+
+    const session = this.documentStore.openSession();
+    const query = () =>
+      session.query({
+        collection: this.descriptor.collection,
+        documentType: this.descriptor.class,
+      }).noTracking()
+
+    // We do not allow for large page sizes
+    if (pagination.pageSize > this.maxPageSize) {
+      pagination.pageSize = this.maxPageSize;
+    }
+
+    const docsTotal = await query().count();
+    const roundPages = Math.round(docsTotal / pagination.pageSize);
+    const pagesTotal = roundPages >= 1 ? roundPages : 1;
+
+    // Do some validation checks
+    if (pagination.page <= 0) {
+      pagination.page = 1;
+    }
+
+    if (pagination.page > pagesTotal) {
+      pagination.page = pagesTotal;
+    }
+
+    const results = await query()
+        .skip((pagination.page - 1) * pagination.pageSize)
+        .take(pagination.pageSize)
+        .all();
+
+    session.dispose();
+
+    return {
+      page: pagination.page,
+      pageSize: pagination.pageSize,
+      pagesTotal,
+      docsTotal,
+      results: results.map(this.metadataRemove),
+    }
   }
 
   public async documentExists(id: string): Promise<boolean> {
