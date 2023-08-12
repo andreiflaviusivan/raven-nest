@@ -4,7 +4,7 @@ import {
   Post,
   Body,
   Param,
-  NotFoundException,
+  NotFoundException, Query, ParseIntPipe, DefaultValuePipe, BadRequestException,
 } from '@nestjs/common';
 import { PersistenceService, MovieRepo, MovieEntity } from './repository';
 
@@ -17,8 +17,10 @@ export class MovieController {
   }
 
   @Get()
-  async getMovies() {
-    return await this.movieRepo.retrieveDocuments();
+  async getMovies(@Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number, @Query('pageSize', new DefaultValuePipe(50), ParseIntPipe) pageSize: number) {
+    return await this.movieRepo.retrieveDocumentsPaginated({
+      page, pageSize,
+    });
   }
 
   @Get(':id')
@@ -56,5 +58,13 @@ export class MovieController {
   @Get('by/tagMovies')
   async getMoviesGroupByTag() {
     return await this.movieRepo.retrieveMoviesGroupByTag();
+  }
+
+  @Get('search/movies')
+  async searchMovies(@Query('term') term: string) {
+    if (term === null || term === '') {
+      throw new BadRequestException();
+    }
+    return await this.movieRepo.searchMovies(term);
   }
 }

@@ -4,7 +4,12 @@ import {
   MovieCountByYearIndex,
   MovieCountByYearMap,
   MovieDescriptionIndex,
-  MovieDescriptionMap, MovieGroupByTagIndex, MovieGroupByTagMap, MovieGroupByYearIndex, MovieGroupByYearMap,
+  MovieDescriptionMap,
+  MovieGroupByTagIndex,
+  MovieGroupByTagMap,
+  MovieGroupByYearIndex,
+  MovieGroupByYearMap, MovieSearchIndex,
+  MovieSearchMap,
 } from '../indexes';
 
 export class MovieRepo extends BaseRepo<MovieEntity> {
@@ -82,6 +87,23 @@ export class MovieRepo extends BaseRepo<MovieEntity> {
     const results = await query.all();
 
     results.forEach(r => r.movies.forEach(this.metadataRemove));
+
+    session.dispose();
+
+    // To remove @metadata which is unnecessary
+    return results.map(this.metadataRemove);
+  }
+
+  public async searchMovies(term: string): Promise<MovieEntity[]> {
+    const session = this.documentStore.openSession();
+
+    const query = session.query({
+        indexName: MovieSearchIndex.name,
+        documentType: MovieSearchMap,
+      })
+      .search('searchTerms', `*${term}*`)
+
+    const results = await query.all();
 
     session.dispose();
 
