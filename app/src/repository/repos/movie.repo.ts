@@ -11,6 +11,7 @@ import {
   MovieGroupByYearMap, MovieSearchIndex,
   MovieSearchMap,
 } from '../indexes';
+import {SuggestionsResponseObject} from "ravendb/dist/Types";
 
 export class MovieRepo extends BaseRepo<MovieEntity> {
   public async retrieveMoviesWithDescriptions(): Promise<
@@ -109,5 +110,20 @@ export class MovieRepo extends BaseRepo<MovieEntity> {
 
     // To remove @metadata which is unnecessary
     return results.map(this.metadataRemove);
+  }
+
+  public async suggestTerms(term: string): Promise<SuggestionsResponseObject> {
+    const session = this.documentStore.openSession();
+
+    const query = session.query({
+      indexName: MovieSearchIndex.name,
+    })
+    .suggestUsing(b => b.byField('searchTerms', term))
+
+    const results = await query.execute()
+
+    session.dispose();
+
+    return results;
   }
 }

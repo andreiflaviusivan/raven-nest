@@ -67,4 +67,12 @@ export class MovieController {
     }
     return await this.movieRepo.searchMovies(term);
   }
+
+  @Get('suggest/terms')
+  async suggestTerms(@Query('term') term: string) {
+    if (term === null || term === '') {
+      throw new BadRequestException();
+    }
+    return await this.movieRepo.suggestTerms(term);
+  }
 }
