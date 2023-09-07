@@ -33,5 +33,6 @@ export class MovieSearchIndex extends AbstractJavaScriptIndexCreationTask<
 
     this.index('searchTerms', 'Search');
     this.store('searchTerms', 'Yes');
+    this.suggestion('searchTerms');
   }
 }
