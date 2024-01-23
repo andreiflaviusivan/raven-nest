@@ -175,4 +175,15 @@ export class BaseRepo<TEntity extends BaseEntity> {
 
     session.dispose();
   }
+
+  public async addAttachment(documentId: string, attachmentName: string, data: Buffer): Promise<void> {
+    if (!await this.documentExists(documentId)) {
+      throw `Document with ID ${documentId} does not exist!`;
+    }
+    const session = this.documentStore.openSession();
+    session.advanced.attachments.store(documentId, attachmentName, data);
+
+    await session.saveChanges();
+    session.dispose();
+  }
 }
