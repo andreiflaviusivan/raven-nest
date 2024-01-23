@@ -2,8 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import * as fs from 'fs';
 import { ConfigService } from '@nestjs/config';
 import DocumentStore, { IAuthOptions } from 'ravendb';
-import { entityDescriptor, MovieEntity } from '../entities';
-import { MovieRepo } from '../repos';
+import {entityDescriptor, MovieEntity, ShopEntity} from '../entities';
+import {MovieRepo, ShopRepo} from '../repos';
 import {MovieCountByYearIndex, MovieDescriptionIndex, MovieGroupByTagIndex, MovieGroupByYearIndex, MovieSearchIndex} from '../indexes';
 
 @Injectable()
@@ -69,5 +69,15 @@ export class PersistenceService {
       );
     }
     return this.documentInterfaces[MovieEntity.name];
+  }
+
+  public getShopRepo(): ShopRepo {
+    if (!this.documentInterfaces[ShopEntity.name]) {
+      this.documentInterfaces[ShopEntity.name] = new ShopRepo(
+          this.documentStore,
+          this.descriptorsByName[ShopEntity.name],
+      );
+    }
+    return this.documentInterfaces[ShopEntity.name];
   }
 }
